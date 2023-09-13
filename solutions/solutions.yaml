@@ -1,0 +1,13 @@
+solutions:
+  - solution: kcc-namespaces
+    description: |
+      Simplified declarative multi-tenancy with project namespaces taken from: https://cloud.google.com/anthos-config-management/docs/tutorials/project-namespace-blueprint
+    url: https://github.com/shaunmitchellve/arete/solutions/kcc-namespaces@main
+  - solution: bastion-host
+    description: |
+      This solution will generate a bastion host VM compatible with OS Login, IAP Tunneling and OS Configuration Management that can be used to access internal VMs and / or private GKE clusters.
+    url: https://github.com/shaunmitchellve/arete/solutions/bastion-host@main
+  - solution: private-sql
+    description: |
+      This solution will create a private cloud SQL instance using a private service connection to your VPC.
+    url: https://github.com/shaunmitchellve/arete/solutions/private-sql@main
