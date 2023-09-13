@@ -2,10 +2,12 @@
 
 ## Description ##
 
-Arete is the Public Sector Declarative Toolkits simplified workflow by providing a CLI that can be utilized to either:
+Arete is a CLI that can be utilized to either:
 
 - Stand-up a `Config Connector` cluster
 - Deploy a Solution into your GCP environment
+
+It provides a simplified way to deploy re-usable KCC solutions.
 
 ## Table of Contents ##
 
