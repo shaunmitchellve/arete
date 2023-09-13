@@ -159,7 +159,7 @@ func getGitHubRaw(url string, branch string, subFolder string, file string) (str
 
 // Get the solutions.yaml file from GitHub and store in the local cache.
 func (sl *SolutionsList) GetCoreSolutions() error {
-	ret, err := getGitHubRaw(viper.GetString("repourl"), viper.GetString("repobranch"), viper.GetString("repofolder"), "solutions.yaml")
+	ret, err := getGitHubRaw(viper.GetString("repoUrl"), viper.GetString("repoBranch"), viper.GetString("repoSubFolder"), "solutions.yaml")
 
 	if err != nil {
 		return err
@@ -171,24 +171,22 @@ func (sl *SolutionsList) GetCoreSolutions() error {
 		return err
 	}
 
-	//if writeToCache {
-		var cachedSolutions SolutionsList
-		if err := cachedSolutions.GetCacheSolutions(); err != nil {
-			return err
-		}
+	var cachedSolutions SolutionsList
+	if err := cachedSolutions.GetCacheSolutions(); err != nil {
+		return err
+	}
 
-		sl.compareSolutions(&cachedSolutions)
+	sl.compareSolutions(&cachedSolutions)
 
-		yamlout, err := yaml.Marshal(&sl)
+	yamlout, err := yaml.Marshal(&sl)
 
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
+	}
 
-		ret = string(yamlout)
+	ret = string(yamlout)
 
-	 	utils.WriteToCache(&ret, "solutions.yaml", false)
-	//}
+	utils.WriteToCache(&ret, "solutions.yaml", false)
 
 	return nil
 }

@@ -33,6 +33,7 @@ func Init() {
 	solutionFile := "solutions.yaml"
 	repoURL := "https://github.com/shaunmitchellve/arete"
 	repoBranch := "main"
+	repoSubFolder := "solutions"
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
@@ -42,6 +43,7 @@ func Init() {
 	viper.SetDefault("cache", configPath)
 	viper.SetDefault("repoUrl", repoURL)
 	viper.SetDefault("repoBranch", repoBranch)
+	viper.SetDefault("repoSubFolder", repoSubFolder)
 
 	if _, cpErr := os.Stat(configPath); os.IsNotExist(cpErr) {
 		if mkErr := os.Mkdir(configPath, 0744); mkErr != nil {
@@ -62,10 +64,12 @@ func Init() {
 		}
 	}
 
-	sl := cmdsolution.SolutionsList{}
-	sl.GetCoreSolutions()
-
 	if cErr := viper.ReadInConfig(); cErr != nil {
 		log.Error().Err(cErr).Msg("Unable to read config file")
+	}
+
+	sl := cmdsolution.SolutionsList{}
+	if err := sl.GetCoreSolutions(); err != nil {
+		log.Error().Err(err).Msg("Unable to setup core solutions from GitHub")
 	}
 }
