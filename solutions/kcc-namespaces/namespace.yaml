@@ -15,7 +15,7 @@
 # Create namespace in the Kubernetes cluster to manage KCC resources in this project
 apiVersion: v1
 kind: Namespace
-metadata: # kpt-merge: /project-id
+metadata:
   name: MY_AWESOME_PROJECT_0000 # kpt-set: ${project-id}
   annotations:
     cnrm.cloud.google.com/project-id: MY_AWESOME_PROJECT_0000 # kpt-set: ${project-id}

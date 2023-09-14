@@ -15,7 +15,7 @@
 # Grant KCC owner of this project
 apiVersion: iam.cnrm.cloud.google.com/v1beta1
 kind: IAMPartialPolicy
-metadata: # kpt-merge: projects/kcc-project-id-owners-permissions
+metadata:
   name: kcc-MY_AWESOME_PROJECT_0000-owners-permissions # kpt-set: kcc-${project-id}-owners-permissions
   namespace: config-control
   annotations:
