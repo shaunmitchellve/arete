@@ -87,18 +87,20 @@ func (p *Prompts) runPrompts() {
 }
 
 // solutionDeployCmd is the cobra command that represents the solution deploy sub command
-func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) {
+func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) error {
 		pr := Prompts{}
 		solutionFile := solutionFilev1.SolutionFile{}
 
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
 
 		sl := cmdsolution.SolutionsList{}
-		// err := sl.GetSolutions()
+		if err := sl.GetCoreSolutions(); err != nil {
+			return err
+		}
 
-		// if err != nil {
-		// 	log.Fatal().Err(err).Msg("")
-		// }
+		if err := sl.GetCacheSolutions(); err != nil {
+			return err
+		}
 
 		url, err := sl.GetUrl(solutionName)
 
@@ -110,7 +112,7 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) {
 			log.Fatal().Err(err).Msg("")
 		}
 
-		cacheDir := viper.GetString("cache") + "/" + solutionName
+		cacheDir := filepath.Join(viper.GetString("cache"),  solutionName)
 
 		_, statErr := os.Stat(cacheDir)
 
@@ -126,7 +128,7 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) {
 
 			if err != nil {
 				log.Error().Err(err).Msg(string(resp))
-				return
+				return err
 			}
 
 			if viper.GetBool("verbose") {
@@ -145,7 +147,7 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) {
 
 		if err != nil {
 			log.Error().Err(err).Msg("Unable to read Kptfile for solution")
-			return
+			return err
 		}
 
 		// Unmarshal the Kptfile YAML file and search for any configPaths in the pipline / mutators
@@ -187,7 +189,7 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) {
 
 			if err != nil {
 				log.Error().Msg("solution.yaml file found but unable to parse")
-				return
+				return err
 			}
 
 			yaml.Unmarshal(data, &solutionFile)
@@ -254,7 +256,7 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) {
 
 		if err != nil {
 			log.Error().Err(err).Msg(string(config))
-			return
+			return err
 		}
 
 		if viper.GetBool("verbose") {
@@ -312,6 +314,8 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) {
 		if !dryRun {
 			log.Info().Msg("Solution has been deployed")
 		}
+
+		return nil
 }
 
 // testPromptComment tests line comments to see if the PromptIdentifier is present

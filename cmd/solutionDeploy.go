@@ -30,8 +30,12 @@ var solutionDeployCmd = &cobra.Command{
 	Use:   "deploy <solution-name>",
 	Short: "Deploy a solution",
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		cmdsolutiondeploy.SolutiondeployRun(args[0], fromCache, dryRun)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if err := cmdsolutiondeploy.SolutiondeployRun(args[0], fromCache, dryRun); err != nil {
+			return err
+		}
+
+		return nil
 	},
 }
 

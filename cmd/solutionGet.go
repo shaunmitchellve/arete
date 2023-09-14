@@ -26,19 +26,22 @@ var branch, subFolder string
 // solutionCmd represents the create command
 var solutionGetCmd = &cobra.Command{
 	Use:   "get",
-	Short: "Get a solution from a remote git repo",
+	Short: "Download the solution into your cache dir and add it to the list of known solutions",
 	Example: ` arete solution get https://github.com/user/repo`,
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		sl := cmdsolution.SolutionsList{}
 
-		err := sl.GetRemoteSolution(args[0], branch, subFolder)
+		if err := sl.GetCoreSolutions(); err != nil {
+			return err
+		}
 
-		if err != nil {
-			log.Fatal().Err(err).Msg("")
+		if err := sl.GetSolution(args[0], branch, subFolder); err != nil {
+			return err
 		}
 
 		log.Info().Msg("Solution Added")
+		return nil
 	},
 }
 

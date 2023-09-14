@@ -77,18 +77,36 @@ func (firstSL *SolutionsList) compareSolutions (secondSL *SolutionsList) error {
 	return nil
 }
 
-// Get the solutions list which is a combination of the GitHub solutions file and
-// any modification to the local cached solutions file.
-// TODO: Where do we store a list of the global solutions other then GitHub solutions.yaml file? This is to manual
-// func (sl *SolutionsList) GetSolutions() error {
-// 	err := sl.GetRemoteSolution("https://github.com/shaunmitchellve", "main", "solutions")
+// Download the solution from it's repo and update the local solution.yaml file
+func (sl *SolutionsList) GetSolution(url string, branch string, subFolder string) error {
+	 if err := sl.GetRemoteSolution(url, branch, subFolder); err != nil {
+		return err
+	 }
 
-// 	if err != nil {
-// 		return err
-// 	}
+	 cacheDir := filepath.Join(viper.GetString("cache"),  sl.Solutions[0].Solution)
+	 _, statErr := os.Stat(cacheDir)
+	 if statErr == nil {
+		os.RemoveAll(cacheDir)
+	}
 
-// 	return nil
-// }
+	log.Info().Msg("Pulling package from repo...")
+
+	// Use KPT to pull down the package
+	resp, err := utils.CallCommand(utils.Kpt, []string{"pkg", "get", sl.Solutions[0].Url, cacheDir}, false)
+
+	if err != nil {
+		log.Error().Err(err).Msg(string(resp))
+		return err
+	}
+
+	if viper.GetBool("verbose") {
+		log.Debug().Msg(string(resp))
+	}
+
+	log.Info().Msg("Solution downloaded to " + cacheDir)
+
+	return nil
+}
 
 // Get a GitHub raw file from the url, branch and subFolder provided
 func getGitHubRaw(url string, branch string, subFolder string, file string) (string, error) {
@@ -100,8 +118,8 @@ func getGitHubRaw(url string, branch string, subFolder string, file string) (str
 	}
 
 	// Remove prefix and suffix forward slashes
-	if subFolder == "" {
-		subFolder = "/"
+	if subFolder == "/" {
+		subFolder = "base"
 	} else if strings.Index(subFolder, "/") == 0 {
 		subFolder = strings.Replace(subFolder, "/", "", 1)
 	}

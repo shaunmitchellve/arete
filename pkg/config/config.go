@@ -20,8 +20,6 @@ import (
 	"os"
 	"strings"
 	"path/filepath"
-
-	"arete/internal/cmdsolution"
 )
 
 // init the config directory and file
@@ -66,10 +64,5 @@ func Init() {
 
 	if cErr := viper.ReadInConfig(); cErr != nil {
 		log.Error().Err(cErr).Msg("Unable to read config file")
-	}
-
-	sl := cmdsolution.SolutionsList{}
-	if err := sl.GetCoreSolutions(); err != nil {
-		log.Error().Err(err).Msg("Unable to setup core solutions from GitHub")
 	}
 }

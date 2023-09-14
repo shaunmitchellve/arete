@@ -32,6 +32,10 @@ var solutionListCmd = &cobra.Command{
 
 		sl := cmdsolution.SolutionsList{}
 
+		if err := sl.GetCoreSolutions(); err != nil {
+			return err
+		}
+
 		err := sl.GetCacheSolutions()
 
 		if err != nil {
