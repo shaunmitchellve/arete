@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"arete/internal/cmdsolutiondeploy"
+	"github.com/shaunmitchellve/arete/internal/cmdsolutiondeploy"
 	"github.com/spf13/cobra"
 )
 

@@ -17,7 +17,7 @@ package cmd
 import (
 	"fmt"
 
-	"arete/internal/cmdsolution"
+	"github.com/shaunmitchellve/arete/internal/cmdsolution"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

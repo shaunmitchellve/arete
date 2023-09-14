@@ -15,8 +15,8 @@
 package main
 
 import (
-	"arete/cmd"
-	"arete/pkg/config"
+	"github.com/shaunmitchellve/arete/cmd"
+	"github.com/shaunmitchellve/arete/pkg/config"
 )
 
 func main() {

@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"arete/internal/cmdcreate"
+	"github.com/shaunmitchellve/arete/internal/cmdcreate"
 	"github.com/spf13/cobra"
 )
 

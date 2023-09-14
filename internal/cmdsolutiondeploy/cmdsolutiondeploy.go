@@ -23,9 +23,9 @@ import (
 	"reflect"
 	"errors"
 
-	"arete/pkg/utils"
-	"arete/internal/cmdsolution"
-	solutionFilev1 "arete/pkg/api/solution/v1"
+	"github.com/shaunmitchellve/arete/pkg/utils"
+	"github.com/shaunmitchellve/arete/internal/cmdsolution"
+	solutionFilev1 "github.com/shaunmitchellve/arete/pkg/api/solution/v1"
 
 	"gopkg.in/yaml.v3"
 	"github.com/manifoldco/promptui"

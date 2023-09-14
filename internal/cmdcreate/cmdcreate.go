@@ -19,7 +19,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"arete/pkg/utils"
+	"github.com/shaunmitchellve/arete/pkg/utils"
 
 	"github.com/manifoldco/promptui"
 	"github.com/rs/zerolog/log"

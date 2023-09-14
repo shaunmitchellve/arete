@@ -25,8 +25,8 @@ import (
 	"errors"
 	"regexp"
 
-	"arete/pkg/utils"
-	solutionFilev1 "arete/pkg/api/solution/v1"
+	"github.com/shaunmitchellve/arete/pkg/utils"
+	solutionFilev1 "github.com/shaunmitchellve/arete/pkg/api/solution/v1"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"

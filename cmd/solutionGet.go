@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"arete/internal/cmdsolution"
+	"github.com/shaunmitchellve/arete/internal/cmdsolution"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"

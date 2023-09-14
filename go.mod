@@ -1,4 +1,4 @@
-module arete
+module github.com/shaunmitchellve/arete
 
 go 1.17
 
