@@ -11,6 +11,12 @@ There are 2 aspects to way solutions are managed in arete. First there is a loca
 
  If you wish to see which solutions have been added and / or are available to arete, simple run the command `arete solution list`
 
+ ## Downloading a solution to modify locally ##
+
+ Sometimes you want to modify the solution package before you deploy it to your environment. You can get a local copy of the solution by calling: `arete solution get https:/github.com/<GIT-USER>/<REPO-NAME>`. This will add the solution to the local solutions list as well as downloading the solution into your local cache. The cache path is stored in the config file and can be changed at anytime.
+
+ Once you "get" the solution you modify the package and when you are ready to deploy the solution you can use `kpt` directly in the solution folder locally or you can run: `arete soluiton deploy --from-cache <SOLUTION-NAME>`
+
 ## Adding a solution ##
 
  If you wish to add a solution that is not listed in the global GitHub solution library you can create your own GitHub repo but a couple of required elements must exist:
