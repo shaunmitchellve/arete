@@ -28,7 +28,7 @@ import (
 var verbose bool
 
 // current version of arete
-var version = "0.0.3-alpha"
+var Version = "0.0.3-alpha"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -45,7 +45,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print out the current version of arete",
 	Run: func(cmd *cobra.Command, args[]string) {
-		fmt.Printf("%s\n", version)
+		fmt.Printf("%s\n", Version)
 	},
 }
 
