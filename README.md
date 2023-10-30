@@ -20,17 +20,11 @@ It provides a simplified way to deploy re-usable KCC solutions.
 
 In order to compile the CLI manually you can use the normal [Go](https://go.dev) compile and install process:
 
-You can Git clone the repo or even use kpt (`kpt pkg get git@github.com:shaunmitchellve/arete.git/cli`)to get the cli package and then run
+You can Git clone the repo or even use kpt (`kpt pkg get https://github.com/shaunmitchellve/arete.git`)to get the cli package and then run
 
 ```shell
-cd cli
+cd arete
 go install
-```
-
-add the location where the executable (normally in your Go path /bin folder) is installed in to your path
-
-```shell
-export PATH=$PATH:/path/to/your/install/directory
 ```
 
 For more information read: <https://go.dev/doc/tutorial/compile-install>
