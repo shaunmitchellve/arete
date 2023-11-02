@@ -25,10 +25,11 @@ import (
 )
 
 // verbose states if the -v or --verbose flag as been set for debug purposes
-var verbose bool
-
-// current version of arete
-var Version = "0.0.3-alpha"
+// current version, is set a build time
+var (
+	verbose bool
+	Version string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
