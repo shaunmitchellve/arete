@@ -152,7 +152,9 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) error {
 
 		// Unmarshal the Kptfile YAML file and search for any configPaths in the pipline / mutators
 		// section. If found then  parse the configPath file mutator and search for the PromptIdentifier
-		yaml.Unmarshal(data, &decoder)
+		if err = yaml.Unmarshal(data, &decoder); err != nil {
+			return err
+		}
 
 		for pipeline, configPaths := range decoder {
 			if pipeline == "pipeline" && reflect.TypeOf(configPaths).Kind() == reflect.Map {
@@ -192,7 +194,9 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) error {
 				return err
 			}
 
-			yaml.Unmarshal(data, &solutionFile)
+			if err = yaml.Unmarshal(data, &solutionFile); err != nil {
+				return err
+			}
 
 			if !solutionFile.Deploy.IsEmpty() &&
 			!solutionFile.Deploy.Stage.IsEmpty() &&
@@ -204,7 +208,6 @@ func SolutiondeployRun(solutionName string, fromCache bool, dryRun bool) error {
 
 					if err != nil {
 						log.Error().Err(err).Msg("There was an error while tyring to set the kube context using the infra deploy stage in the solutions solution.yaml file")
-						err = nil
 					}
 
 					saAccount, err := getConfigConnector()
@@ -335,7 +338,9 @@ func processConfigMutator(configPath string, pr *Prompts) {
 	kptFile, _ := kio.FromBytes(data)
 
 	if len(kptFile) > 0 {
-		walk(kptFile[0], pr)
+		if err = walk(kptFile[0], pr); err != nil {
+			log.Fatal().Err(err).Msg("Unable to walk yaml")
+		}
 		pr.runPrompts()
 
 		err := modifyConfig(pr, configPath, data)
@@ -383,7 +388,9 @@ func walk(node *kyaml.RNode, pr *Prompts) error {
 func walkMapping(object *kyaml.RNode, pr *Prompts) error {
 	return object.VisitFields( func(node *kyaml.MapNode) error {
 		if node.Value.YNode().Kind == kyaml.MappingNode {
-			walkMapping(node.Value, pr)
+			if err := walkMapping(node.Value, pr); err != nil {
+				return err
+			}
 		}
 
 		pr.SetPrompt(node)

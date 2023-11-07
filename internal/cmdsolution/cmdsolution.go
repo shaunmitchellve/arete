@@ -177,49 +177,60 @@ func getGitHubRaw(url string, branch string, subFolder string, file string) (str
 
 // Get the solutions.yaml file from GitHub and store in the local cache.
 func (sl *SolutionsList) GetCoreSolutions() error {
-	ret, err := getGitHubRaw(viper.GetString("repoUrl"), viper.GetString("repoBranch"), viper.GetString("repoSubFolder"), "solutions.yaml")
+	var (
+		err error
+		ret string
+		cachedSolutions SolutionsList
+		yamlout []byte
+	)
 
-	if err != nil {
+	if ret, err = getGitHubRaw(viper.GetString("repoUrl"), viper.GetString("repoBranch"), viper.GetString("repoSubFolder"), "solutions.yaml"); err != nil {
 		return err
 	}
 
-	err = yaml.Unmarshal([]byte(ret), &sl)
-
-	if err != nil {
+	if err = yaml.Unmarshal([]byte(ret), &sl); err != nil {
 		return err
 	}
 
-	var cachedSolutions SolutionsList
-	if err := cachedSolutions.GetCacheSolutions(); err != nil {
+	if err = cachedSolutions.GetCacheSolutions(); err != nil {
 		return err
 	}
 
-	sl.compareSolutions(&cachedSolutions)
+	if err = sl.compareSolutions(&cachedSolutions); err != nil {
+		return err
+	}
 
-	yamlout, err := yaml.Marshal(&sl)
-
-	if err != nil {
+	if yamlout, err = yaml.Marshal(&sl); err != nil {
 		return err
 	}
 
 	ret = string(yamlout)
 
-	utils.WriteToCache(&ret, "solutions.yaml", false)
+	if err = utils.WriteToCache(&ret, "solutions.yaml", false); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 // Get the solution.yaml file from a GitHub repo.
 func (sl *SolutionsList) GetRemoteSolution(url string, branch string, subFolder string) error {
-	ret, err := getGitHubRaw(url, branch, subFolder, "solution.yaml")
+	var (
+		err error
+		ret string
+		cachedSolutions SolutionsList
+		yamlout []byte
+	)
 
-	if err != nil {
+	if ret, err = getGitHubRaw(url, branch, subFolder, "solution.yaml"); err != nil {
 		return err
 	}
 
 	solutionFile := solutionFilev1.SolutionFile{}
 
-	yaml.Unmarshal([]byte(ret), &solutionFile)
+	if err = yaml.Unmarshal([]byte(ret), &solutionFile); err != nil {
+		return err
+	}
 
 	if !solutionFile.Spec.IsEmpty() {
 		sol := make([]Solution, 1)
@@ -229,23 +240,23 @@ func (sl *SolutionsList) GetRemoteSolution(url string, branch string, subFolder 
 
 		sl.Solutions = append(sl.Solutions, sol[0])
 
-		var cachedSolutions SolutionsList
-
 		if err := cachedSolutions.GetCacheSolutions(); err != nil {
 			return err
 		}
 
-		sl.compareSolutions(&cachedSolutions)
+		if err = sl.compareSolutions(&cachedSolutions); err != nil {
+			return err
+		}
 
-		yamlout, err := yaml.Marshal(&sl)
-
-		if err != nil {
+		if yamlout, err = yaml.Marshal(&sl); err != nil {
 			return err
 		}
 
 		ret = string(yamlout)
 
-	 	utils.WriteToCache(&ret, "solutions.yaml", false)
+	 	if err = utils.WriteToCache(&ret, "solutions.yaml", false); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -257,12 +268,12 @@ func (sl *SolutionsList) GetCacheSolutions() error {
 	cacheSl, err := os.ReadFile(solutionsFile)
 
 	if err != nil {
-		os.Create(solutionsFile)
+		if _, err = os.Create(solutionsFile); err != nil {
+			return err
+		}
 	}
 
-	err = yaml.Unmarshal(cacheSl, &sl)
-
-	if err != nil {
+	if err = yaml.Unmarshal(cacheSl, &sl); err != nil {
 		return err
 	}
 
