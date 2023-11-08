@@ -1,8 +1,9 @@
 name: golangci-lint
 on:
   push:
-    tags:
-      - "*"
+    push:
+      branches:
+        - "*"
 
 permissions:
   contents: read
