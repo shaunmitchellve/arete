@@ -15,6 +15,9 @@
 package cmd
 
 import (
+	"os"
+	"fmt"
+
 	"github.com/shaunmitchellve/arete/internal/cmdcreate"
 	"github.com/spf13/cobra"
 )
@@ -44,7 +47,10 @@ func init() {
 	createCmd.Flags().StringVarP(&project, "project", "p", "", "The new project ID to create for the Config Controller cluster. Default: <instance-name>")
 
 	createCmd.Flags().StringVarP(&region, "region", "r", "", "REQUIRED: The GCP region to use when creating the instance")
-	createCmd.MarkFlagRequired("region")
+	if err := createCmd.MarkFlagRequired("region"); err != nil {
+		fmt.Printf("Unable to create requied flag (region): %v", err)
+		os.Exit(0)
+	}
 
 	createCmd.Flags().StringVarP(&billing, "billing", "b", "", "Billing account to be used for project and resources")
 }

@@ -147,7 +147,9 @@ func CallCommand(c Command, args []string, stream bool) ([]byte, error) {
 			log.Info().Msg(outScanner.Text())
 		}
 
-		cmd.Wait()
+		if err = cmd.Wait(); err != nil {
+			return nil, err
+		}
 
 		if len(errString) > 0 && c != Gcloud {
 			return nil, errors.New(errString)

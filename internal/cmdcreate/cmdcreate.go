@@ -70,6 +70,8 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 	regionFound := false
 	regionMsg := "Unsupported region. Please choose one of: \n"
 
+	var err error
+
 	for i := 0; i < len(currentRegions); i++ {
 		regionMsg += " - " + currentRegions[i] + "\n"
 		if region == currentRegions[i] {
@@ -92,28 +94,34 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 	createStepsFile := filepath.Join(viper.GetString("cache"), ".create")
 	createSteps := createSteps{}
 
-	if _, err := os.Stat(createStepsFile); err != nil {
+	if _, err = os.Stat(createStepsFile); err != nil {
 		createYaml := "clusters:\n  - cluster: " + instanceName + "\n    steps:\n"
 
-		utils.WriteToCache(&createYaml, ".create", false)
+		if err = utils.WriteToCache(&createYaml, ".create", false); err != nil {
+			log.Fatal().Err(err).Msg("")
+		}
 	} else {
 		stepsFileContents, err := os.ReadFile(createStepsFile)
 
 		if err == nil {
-			yaml.Unmarshal(stepsFileContents, &createSteps)
+			if err = yaml.Unmarshal(stepsFileContents, &createSteps); err != nil {
+				log.Fatal().Err(err).Msg("")
+			}
 		}
 
 		if(!createSteps.clusterExists(instanceName)) {
 			createYaml := "  - cluster: " + instanceName + "\n    steps:\n"
 
-			if err := utils.WriteToCache(&createYaml, ".create", true); err != nil {
+			if err = utils.WriteToCache(&createYaml, ".create", true); err != nil {
 				log.Fatal().Err(err).Msg("")
 			}
 
 			stepsFileContents, err := os.ReadFile(createStepsFile)
 
 			if err == nil {
-				yaml.Unmarshal(stepsFileContents, &createSteps)
+				if err = yaml.Unmarshal(stepsFileContents, &createSteps); err != nil {
+					log.Fatal().Err(err).Msg("")
+				}
 			}
 		}
 	}
@@ -136,9 +144,7 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 			}
 		}
 
-		err := createProject(project, billing)
-
-		if err != nil {
+		if err = createProject(project, billing); err != nil {
 			log.Fatal().Err(err).Msg("")
 		}
 
@@ -157,13 +163,13 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 
 		cmdArgs := []string{"services", "enable", "krmapihosting.googleapis.com", "container.googleapis.com", "cloudresourcemanager.googleapis.com", "cloudbilling.googleapis.com", "--project=" + project}
 
-		_, err := utils.CallCommand(utils.Gcloud, cmdArgs, true)
-
-		if err != nil {
+		if _, err = utils.CallCommand(utils.Gcloud, cmdArgs, true); err != nil {
 			log.Fatal().Err(err).Msg("")
 		}
 
-		saveStep(instanceName, "services")
+		if err = saveStep(instanceName, "services"); err != nil {
+			log.Fatal().Err(err).Msg("")
+		}
 	}
 
 	networkConfig := map[string]interface{}{"name": "kcc-controller", "subnet-name": "kcc-regional-subnet", "cidr": "192.168.0.0/16"}
@@ -194,9 +200,13 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 				log.Fatal().Err(err).Msg(string(ret))
 			}
 
-			saveStep(instanceName, "network")
+			if err = saveStep(instanceName, "network"); err != nil {
+				log.Fatal().Err(err).Msg("")
+			}
 		} else {
-			saveStep(instanceName, "network")
+			if err = saveStep(instanceName, "network"); err != nil {
+				log.Fatal().Err(err).Msg("")
+			}
 		}
 	}
 
@@ -222,9 +232,13 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 				log.Fatal().Err(err).Msg(string(ret))
 			}
 
-			saveStep(instanceName, "subnet")
+			if err = saveStep(instanceName, "subnet"); err != nil {
+				log.Fatal().Err(err).Msg("")
+			}
 		} else {
-			saveStep(instanceName, "subnet")
+			if err = saveStep(instanceName, "subnet"); err != nil {
+				log.Fatal().Err(err).Msg("")
+			}
 		}
 	}
 
@@ -234,23 +248,21 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 
 		log.Info().Msg("Creating Config Controller Cluster....")
 
-		_, err := utils.CallCommand(utils.Gcloud, cmdArgs, true)
-
-		if err != nil {
+		if _, err = utils.CallCommand(utils.Gcloud, cmdArgs, true); err != nil {
 			log.Fatal().Err(err).Msg("")
 		}
 
-		saveStep(instanceName, "config-controller")
+		if err = saveStep(instanceName, "config-controller"); err != nil {
+			log.Fatal().Err(err).Msg("")
+		}
 	}
 
 	// Adding service account to the owners role
 	if !createSteps.stepExists(instanceName, "add-policy") {
 		cmdArgs := []string{"container", "clusters", "get-credentials", "krmapihost-" + instanceName, "--region=" + region, "--project=" + project}
 
-		_, err := utils.CallCommand(utils.Gcloud, cmdArgs, false)
-
-		if err != nil {
-			log.Fatal().Err(err).Msg("Unable to get configconnectorcontext")
+		if _, err = utils.CallCommand(utils.Gcloud, cmdArgs, false); err != nil {
+			log.Fatal().Err(err).Msg("Unable to get GKE credetials")
 		}
 
 		cmdArgs = []string{"get", "ConfigConnectorContext", "-n", "config-control", "-o", "jsonpath='{.items[0].spec.googleServiceAccount}'"}
@@ -272,7 +284,9 @@ func CmdcreateRun(instanceName string, region string, project string, billing st
 			log.Fatal().Err(err).Msg("Unable to add roles/owner to " + sa + string(ret))
 		}
 
-		saveStep(instanceName, "add-policy")
+		if err = saveStep(instanceName, "add-policy"); err != nil {
+			log.Fatal().Err(err).Msg("")
+		}
 	}
 
 	log.Info().Msg("Config Controller setup complete")
@@ -313,9 +327,7 @@ func createProject(project string, billing string) error {
 		cmdArgs = append(cmdArgs, "--organization="+orgId)
 	}
 
-	_, err = utils.CallCommand(utils.Gcloud, cmdArgs, true)
-
-	if err != nil {
+	if _, err = utils.CallCommand(utils.Gcloud, cmdArgs, true); err != nil {
 		return err
 	}
 
